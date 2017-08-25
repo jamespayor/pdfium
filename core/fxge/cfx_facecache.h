@@ -61,9 +61,12 @@ class CFX_FaceCache {
   void DestroyPlatform();
 
   FXFT_Face const m_Face;
+  pdfium::base::subtle::SpinLock m_SizeMapLock;
   std::map<CFX_ByteString, std::unique_ptr<CFX_SizeGlyphCache>> m_SizeMap;
+  pdfium::base::subtle::SpinLock m_PathMapLock;
   std::map<uint32_t, std::unique_ptr<CFX_PathData>> m_PathMap;
 #if defined _SKIA_SUPPORT_ || _SKIA_SUPPORT_PATHS_
+  pdfium::base::subtle::SpinLock m_pTypefaceLock;
   sk_sp<SkTypeface> m_pTypeface;
 #endif
 };

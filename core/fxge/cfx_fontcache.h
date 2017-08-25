@@ -35,7 +35,9 @@ class CFX_FontCache {
   };
 
   using CFX_FTCacheMap = std::map<FXFT_Face, std::unique_ptr<CountedFaceCache>>;
+  pdfium::base::subtle::SpinLock m_FTFaceMapLock;
   CFX_FTCacheMap m_FTFaceMap;
+  pdfium::base::subtle::SpinLock m_ExtFaceMapLock;
   CFX_FTCacheMap m_ExtFaceMap;
 };
 

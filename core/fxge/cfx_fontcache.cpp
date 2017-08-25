@@ -29,6 +29,10 @@ CFX_FaceCache* CFX_FontCache::GetCachedFace(const CFX_Font* pFont) {
   FXFT_Face face = pFont->GetFace();
   const bool bExternal = !face;
   CFX_FTCacheMap& map = bExternal ? m_ExtFaceMap : m_FTFaceMap;
+  pdfium::base::subtle::SpinLock& lock = bExternal ? m_ExtFaceMapLock : m_FTFaceMapLock;
+
+  pdfium::base::subtle::SpinLock::Guard guard(lock);
+
   auto it = map.find(face);
   if (it != map.end()) {
     CountedFaceCache* counted_face_cache = it->second.get();
@@ -56,6 +60,9 @@ void CFX_FontCache::ReleaseCachedFace(const CFX_Font* pFont) {
   FXFT_Face face = pFont->GetFace();
   const bool bExternal = !face;
   CFX_FTCacheMap& map = bExternal ? m_ExtFaceMap : m_FTFaceMap;
+  pdfium::base::subtle::SpinLock& lock = bExternal ? m_ExtFaceMapLock : m_FTFaceMapLock;
+
+  pdfium::base::subtle::SpinLock::Guard guard(lock);
 
   auto it = map.find(face);
   if (it == map.end())

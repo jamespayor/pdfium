@@ -243,12 +243,22 @@ const CFX_PathData* CFX_FaceCache::LoadGlyphPath(const CFX_Font* pFont,
       key_modifier += 1U << 31;
     key += key_modifier;
   }
-  auto it = m_PathMap.find(key);
-  if (it != m_PathMap.end())
-    return it->second.get();
+
+  {
+    pdfium::base::subtle::SpinLock::Guard guard(m_PathMapLock);
+
+    auto it = m_PathMap.find(key);
+    if (it != m_PathMap.end())
+      return it->second.get();
+  }
 
   CFX_PathData* pGlyphPath = pFont->LoadGlyphPathImpl(glyph_index, dest_width);
-  m_PathMap[key] = std::unique_ptr<CFX_PathData>(pGlyphPath);
+
+  {
+    pdfium::base::subtle::SpinLock::Guard guard(m_PathMapLock);
+    m_PathMap[key] = std::unique_ptr<CFX_PathData>(pGlyphPath);
+  }
+
   return pGlyphPath;
 }
 
@@ -310,6 +320,8 @@ const CFX_GlyphBitmap* CFX_FaceCache::LoadGlyphBitmap(const CFX_Font* pFont,
                              bFontStyle, dest_width, anti_alias);
   }
   std::unique_ptr<CFX_GlyphBitmap> pGlyphBitmap;
+
+  pdfium::base::subtle::SpinLock::Guard guard(m_SizeMapLock);
   auto it = m_SizeMap.find(FaceGlyphsKey);
   if (it != m_SizeMap.end()) {
     CFX_SizeGlyphCache* pSizeCache = it->second.get();
@@ -353,6 +365,12 @@ const CFX_GlyphBitmap* CFX_FaceCache::LoadGlyphBitmap(const CFX_Font* pFont,
 
 #if defined _SKIA_SUPPORT_ || defined _SKIA_SUPPORT_PATHS_
 CFX_TypeFace* CFX_FaceCache::GetDeviceCache(const CFX_Font* pFont) {
+  if (m_pTypeface) {
+    return m_pTypeface.get();
+  }
+  
+  pdfium::base::subtle::SpinLock::Guard guard(m_pTypefaceLock);
+
   if (!m_pTypeface) {
     m_pTypeface = SkTypeface::MakeFromStream(
         new SkMemoryStream(pFont->GetFontData(), pFont->GetSize()));
@@ -381,21 +399,30 @@ CFX_GlyphBitmap* CFX_FaceCache::LookUpGlyphBitmap(
     int dest_width,
     int anti_alias) {
   CFX_SizeGlyphCache* pSizeCache;
-  auto it = m_SizeMap.find(FaceGlyphsKey);
-  if (it == m_SizeMap.end()) {
-    auto pNewCache = pdfium::MakeUnique<CFX_SizeGlyphCache>();
-    pSizeCache = pNewCache.get();
-    m_SizeMap[FaceGlyphsKey] = std::move(pNewCache);
-  } else {
-    pSizeCache = it->second.get();
+
+  {
+    pdfium::base::subtle::SpinLock::Guard guard(m_SizeMapLock);
+    
+    auto it = m_SizeMap.find(FaceGlyphsKey);
+    if (it == m_SizeMap.end()) {
+      auto pNewCache = pdfium::MakeUnique<CFX_SizeGlyphCache>();
+      pSizeCache = pNewCache.get();
+      m_SizeMap[FaceGlyphsKey] = std::move(pNewCache);
+    } else {
+      pSizeCache = it->second.get();
+    }
+    auto it2 = pSizeCache->m_GlyphMap.find(glyph_index);
+    if (it2 != pSizeCache->m_GlyphMap.end())
+      return it2->second.get();
   }
-  auto it2 = pSizeCache->m_GlyphMap.find(glyph_index);
-  if (it2 != pSizeCache->m_GlyphMap.end())
-    return it2->second.get();
 
   std::unique_ptr<CFX_GlyphBitmap> pGlyphBitmap = RenderGlyph(
       pFont, glyph_index, bFontStyle, pMatrix, dest_width, anti_alias);
   CFX_GlyphBitmap* pResult = pGlyphBitmap.get();
-  pSizeCache->m_GlyphMap[glyph_index] = std::move(pGlyphBitmap);
+
+  {
+    pdfium::base::subtle::SpinLock::Guard guard(m_SizeMapLock);
+    pSizeCache->m_GlyphMap[glyph_index] = std::move(pGlyphBitmap);
+  }
   return pResult;
 }
