@@ -23,6 +23,7 @@ config("pdfium_common_config") {
     "OPJ_STATIC",
     "PNG_PREFIX",
     "PNG_USE_READ_MACROS",
+    "FPDFSDK_EXPORTS",
   ]
 
   if (pdf_use_skia) {
@@ -100,7 +101,7 @@ config("xfa_warnings") {
   }
 }
 
-static_library("pdfium") {
+shared_library("pdfium") {
   sources = [
     "fpdfsdk/cba_annotiterator.cpp",
     "fpdfsdk/cba_annotiterator.h",
@@ -177,6 +178,10 @@ static_library("pdfium") {
     "public/fpdf_text.h",
     "public/fpdf_transformpage.h",
     "public/fpdfview.h",
+    "fpdfsdk/extensions/fpdf_loaddocumentw.cpp",
+    "fpdfsdk/extensions/fpdfpageobj_extensions.cpp",
+    "fpdfsdk/extensions/fpdftext_vectorized.cpp",
+    "fpdfsdk/extensions/pdfiumviewer.cpp",
   ]
 
   libs = []
