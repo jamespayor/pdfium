@@ -40,7 +40,7 @@ void* FXMEM_DefaultRealloc(void* pointer, size_t new_size) {
 }
 
 void FXMEM_DefaultFree(void* pointer) {
-  pdfium::base::PartitionFree(pointer);
+  pdfium::base::PartitionFreeGeneric(gGeneralPartitionAllocator.root(), pointer);
 }
 
 NEVER_INLINE void FX_OutOfMemoryTerminate() {
