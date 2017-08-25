@@ -10,14 +10,19 @@
 #include <unordered_set>
 
 #include "core/fxcrt/fx_string.h"
+#include "third_party/base/allocator/partition_allocator/spin_lock.h"
 
 template <typename StringType>
 class CFX_StringPoolTemplate {
  public:
-  StringType Intern(const StringType& str) { return *m_Pool.insert(str).first; }
+  StringType Intern(const StringType& str) {
+  	pdfium::base::subtle::SpinLock::Guard guard(m_Lock);
+  	return *m_Pool.insert(str).first;
+  }
   void Clear() { m_Pool.clear(); }
 
  private:
+  pdfium::base::subtle::SpinLock m_Lock;
   std::unordered_set<StringType> m_Pool;
 };
 
