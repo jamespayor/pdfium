@@ -29,6 +29,8 @@ class SpinLock {
  public:
   using Guard = std::lock_guard<SpinLock>;
 
+  SpinLock() : lock_(0) {}
+
   ALWAYS_INLINE void lock() {
     static_assert(sizeof(lock_) == sizeof(int),
                   "int and lock_ are different sizes");

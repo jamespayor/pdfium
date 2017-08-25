@@ -572,6 +572,7 @@ CFX_PathData* CFX_Font::LoadGlyphPathImpl(uint32_t glyph_index,
                                           int dest_width) const {
   if (!m_Face)
     return nullptr;
+
   FXFT_Set_Pixel_Sizes(m_Face, 0, 64);
   FXFT_Matrix ft_matrix = {65536, 0, 0, 65536};
   if (m_pSubstFont) {

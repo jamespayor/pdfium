@@ -29,25 +29,26 @@ CFX_FaceCache* CFX_FontCache::GetCachedFace(const CFX_Font* pFont) {
   FXFT_Face face = pFont->GetFace();
   const bool bExternal = !face;
   CFX_FTCacheMap& map = bExternal ? m_ExtFaceMap : m_FTFaceMap;
-  pdfium::base::subtle::SpinLock& lock = bExternal ? m_ExtFaceMapLock : m_FTFaceMapLock;
 
-  pdfium::base::subtle::SpinLock::Guard guard(lock);
+  {
+    pdfium::base::subtle::SpinLock::Guard guard(bExternal ? m_ExtFaceMapLock : m_FTFaceMapLock);
 
-  auto it = map.find(face);
-  if (it != map.end()) {
-    CountedFaceCache* counted_face_cache = it->second.get();
-    counted_face_cache->m_nCount++;
-    return counted_face_cache->m_Obj.get();
+    auto it = map.find(face);
+    if (it != map.end()) {
+      CountedFaceCache* counted_face_cache = it->second.get();
+      counted_face_cache->m_nCount++;
+      return counted_face_cache->m_Obj.get();
+    }
+
+    auto counted_face_cache = pdfium::MakeUnique<CountedFaceCache>();
+    counted_face_cache->m_nCount = 2;
+    auto new_cache =
+        pdfium::MakeUnique<CFX_FaceCache>(bExternal ? nullptr : face);
+    CFX_FaceCache* face_cache = new_cache.get();
+    counted_face_cache->m_Obj = std::move(new_cache);
+    map[face] = std::move(counted_face_cache);
+    return face_cache;
   }
-
-  auto counted_face_cache = pdfium::MakeUnique<CountedFaceCache>();
-  counted_face_cache->m_nCount = 2;
-  auto new_cache =
-      pdfium::MakeUnique<CFX_FaceCache>(bExternal ? nullptr : face);
-  CFX_FaceCache* face_cache = new_cache.get();
-  counted_face_cache->m_Obj = std::move(new_cache);
-  map[face] = std::move(counted_face_cache);
-  return face_cache;
 }
 
 #ifdef _SKIA_SUPPORT_
@@ -60,18 +61,19 @@ void CFX_FontCache::ReleaseCachedFace(const CFX_Font* pFont) {
   FXFT_Face face = pFont->GetFace();
   const bool bExternal = !face;
   CFX_FTCacheMap& map = bExternal ? m_ExtFaceMap : m_FTFaceMap;
-  pdfium::base::subtle::SpinLock& lock = bExternal ? m_ExtFaceMapLock : m_FTFaceMapLock;
 
-  pdfium::base::subtle::SpinLock::Guard guard(lock);
+  {
+    pdfium::base::subtle::SpinLock::Guard guard(bExternal ? m_ExtFaceMapLock : m_FTFaceMapLock);
 
-  auto it = map.find(face);
-  if (it == map.end())
+    auto it = map.find(face);
+    if (it == map.end())
     return;
 
-  CountedFaceCache* counted_face_cache = it->second.get();
-  if (counted_face_cache->m_nCount > 2) {
+    CountedFaceCache* counted_face_cache = it->second.get();
+    if (counted_face_cache->m_nCount > 2) {
     counted_face_cache->m_nCount--;
-  } else {
+    } else {
     map.erase(it);
+    }
   }
 }

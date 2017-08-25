@@ -60,6 +60,7 @@ class CFX_FaceCache {
   void InitPlatform();
   void DestroyPlatform();
 
+  pdfium::base::subtle::SpinLock m_FaceLock;
   FXFT_Face const m_Face;
   pdfium::base::subtle::SpinLock m_SizeMapLock;
   std::map<CFX_ByteString, std::unique_ptr<CFX_SizeGlyphCache>> m_SizeMap;
