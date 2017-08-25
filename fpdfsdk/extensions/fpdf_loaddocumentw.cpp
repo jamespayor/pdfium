@@ -30,7 +30,7 @@
 // Note: Most imports probably unnecessary - I just brought them over from fpdfview.cpp mostly...
 
 extern "C" {
-  DLLEXPORT FPDF_DOCUMENT STDCALL FPDF_LoadDocumentW(FPDF_WIDESTRING file_path, FPDF_BYTESTRING password);
+  FPDF_EXPORT FPDF_DOCUMENT FPDF_CALLCONV FPDF_LoadDocumentW(FPDF_WIDESTRING file_path, FPDF_BYTESTRING password);
 }
 
 // Taken straight from fpdfview.cpp:
@@ -55,7 +55,7 @@ static FPDF_DOCUMENT LoadDocumentImpl(
 }
 
 
-DLLEXPORT FPDF_DOCUMENT STDCALL FPDF_LoadDocumentW(FPDF_WIDESTRING file_path,
+FPDF_EXPORT FPDF_DOCUMENT FPDF_CALLCONV FPDF_LoadDocumentW(FPDF_WIDESTRING file_path,
                                                    FPDF_BYTESTRING password) {
   // NOTE: the creation of the file needs to be by the embedder on the
   // other side of this API.

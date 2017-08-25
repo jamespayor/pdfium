@@ -30,11 +30,11 @@ typedef struct _FPDF_EXT_CHARINFO_ {
 
 
 extern "C" {
-  DLLEXPORT FPDF_BOOL STDCALL FPDFText_GetCharInfo(FPDF_TEXTPAGE text_page, int start_index, int count, FPDF_EXT_CHARINFO* char_info);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_GetCharInfo(FPDF_TEXTPAGE text_page, int start_index, int count, FPDF_EXT_CHARINFO* char_info);
 }
 
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFText_GetCharInfo(FPDF_TEXTPAGE text_page, int start_index, int count, FPDF_EXT_CHARINFO* char_info) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_GetCharInfo(FPDF_TEXTPAGE text_page, int start_index, int count, FPDF_EXT_CHARINFO* char_info) {
   if (!text_page)
     return 0;
 
