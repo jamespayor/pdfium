@@ -43,7 +43,7 @@ void* FXMEM_DefaultRealloc(void* pointer, size_t new_size, int flags) {
 
 // TODO(palmer): Remove the |flags| argument.
 void FXMEM_DefaultFree(void* pointer, int flags) {
-  pdfium::base::PartitionFree(pointer);
+  pdfium::base::PartitionFreeGeneric(gGeneralPartitionAllocator.root(), pointer);
 }
 
 NEVER_INLINE void FX_OutOfMemoryTerminate() {

@@ -113,7 +113,7 @@ inline void FX_Free(void* ptr) {
   // So this check is hiding (what I consider to be) bugs, and we should try to
   // fix them. https://bugs.chromium.org/p/pdfium/issues/detail?id=690
   if (ptr)
-    pdfium::base::PartitionFree(ptr);
+    pdfium::base::PartitionFreeGeneric(gGeneralPartitionAllocator.root(), ptr);
 }
 
 // The FX_ArraySize(arr) macro returns the # of elements in an array arr.
