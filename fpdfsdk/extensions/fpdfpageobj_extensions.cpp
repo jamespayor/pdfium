@@ -26,29 +26,29 @@ extern "C" {
   } FPDF_PATHPOINT;
 
 
-  DLLEXPORT int STDCALL FPDFPageObj_GetBlendMode(FPDF_PAGEOBJECT page_object, int bufferLength, char* buffer);
+  FPDF_EXPORT int FPDF_CALLCONV FPDFPageObj_GetBlendMode(FPDF_PAGEOBJECT page_object, int bufferLength, char* buffer);
 
-  DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix);
-  DLLEXPORT FPDF_BOOL STDCALL FPDFText_GetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix);
-  DLLEXPORT FPDF_BOOL STDCALL FPDFImageObj_GetMatrix(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_GetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_GetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFImageObj_GetMatrix(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix);
 
-  DLLEXPORT FPDF_BOOL STDCALL FPDFPath_SetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix);
-  DLLEXPORT FPDF_BOOL STDCALL FPDFText_SetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix);
-  DLLEXPORT FPDF_BOOL STDCALL FPDFImageObj_SetMatrix_Draftable(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_SetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_SetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFImageObj_SetMatrix_Draftable(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix);
 
-  DLLEXPORT int STDCALL FPDFPath_GetPointCount(FPDF_PAGEOBJECT path_page_object);
-  DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetPoints(FPDF_PAGEOBJECT path_page_object, FPDF_PATHPOINT* points);
+  FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetPointCount(FPDF_PAGEOBJECT path_page_object);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_GetPoints(FPDF_PAGEOBJECT path_page_object, FPDF_PATHPOINT* points);
 
-  DLLEXPORT int STDCALL FPDFPath_GetFillMode(FPDF_PAGEOBJECT path_page_object);
-  DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetStrokeEnabled(FPDF_PAGEOBJECT path_page_object);
+  FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetFillMode(FPDF_PAGEOBJECT path_page_object);
+  FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_GetStrokeEnabled(FPDF_PAGEOBJECT path_page_object);
 
-  DLLEXPORT float STDCALL FPDFPath_GetLineWidth(FPDF_PAGEOBJECT path_page_object);
-  DLLEXPORT int STDCALL FPDFPath_GetLineCap(FPDF_PAGEOBJECT path_page_object);
-  DLLEXPORT int STDCALL FPDFPath_GetLineJoin(FPDF_PAGEOBJECT path_page_object);
+  FPDF_EXPORT float FPDF_CALLCONV FPDFPath_GetLineWidth(FPDF_PAGEOBJECT path_page_object);
+  FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetLineCap(FPDF_PAGEOBJECT path_page_object);
+  FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetLineJoin(FPDF_PAGEOBJECT path_page_object);
 }
 
 
-DLLEXPORT int STDCALL FPDFPageObj_GetBlendMode(FPDF_PAGEOBJECT page_object, int bufferLength, char* buffer) {
+FPDF_EXPORT int FPDF_CALLCONV FPDFPageObj_GetBlendMode(FPDF_PAGEOBJECT page_object, int bufferLength, char* buffer) {
   if (!page_object)
     return 0;
 
@@ -66,7 +66,7 @@ DLLEXPORT int STDCALL FPDFPageObj_GetBlendMode(FPDF_PAGEOBJECT page_object, int 
 }
 
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_GetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix) {
   if (!path_page_object)
     return false;
 
@@ -83,7 +83,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetMatrix(FPDF_PAGEOBJECT path_page_object,
   return true;
 }
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFText_GetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_GetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix) {
   if (!text_page_object)
     return false;
 
@@ -100,7 +100,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFText_GetMatrix(FPDF_PAGEOBJECT text_page_object,
   return true;
 }
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFImageObj_GetMatrix(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFImageObj_GetMatrix(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix) {
   if (!image_page_object)
     return false;
 
@@ -118,7 +118,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFImageObj_GetMatrix(FPDF_PAGEOBJECT image_page_ob
 }
 
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFPath_SetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_SetMatrix(FPDF_PAGEOBJECT path_page_object, FS_MATRIX* matrix) {
   if (!path_page_object)
     return false;
 
@@ -131,7 +131,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFPath_SetMatrix(FPDF_PAGEOBJECT path_page_object,
   return true;
 }
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFText_SetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_SetMatrix(FPDF_PAGEOBJECT text_page_object, FS_MATRIX* matrix) {
   if (!text_page_object)
     return false;
 
@@ -150,7 +150,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFText_SetMatrix(FPDF_PAGEOBJECT text_page_object,
   return true;
 }
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFImageObj_SetMatrix_Draftable(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFImageObj_SetMatrix_Draftable(FPDF_PAGEOBJECT image_page_object, FS_MATRIX* matrix) {
   if (!image_page_object)
     return false;
 
@@ -165,7 +165,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFImageObj_SetMatrix_Draftable(FPDF_PAGEOBJECT ima
 }
 
 
-DLLEXPORT int STDCALL FPDFPath_GetPointCount(FPDF_PAGEOBJECT path_page_object) {
+FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetPointCount(FPDF_PAGEOBJECT path_page_object) {
   if (!path_page_object)
     return 0;
 
@@ -175,7 +175,7 @@ DLLEXPORT int STDCALL FPDFPath_GetPointCount(FPDF_PAGEOBJECT path_page_object) {
   return pathPoints.size();
 }
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetPoints(FPDF_PAGEOBJECT path_page_object, FPDF_PATHPOINT* points) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_GetPoints(FPDF_PAGEOBJECT path_page_object, FPDF_PATHPOINT* points) {
   if (!path_page_object)
     return false;
 
@@ -196,7 +196,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetPoints(FPDF_PAGEOBJECT path_page_object,
 }
 
 
-DLLEXPORT int STDCALL FPDFPath_GetFillMode(FPDF_PAGEOBJECT path_page_object) {
+FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetFillMode(FPDF_PAGEOBJECT path_page_object) {
   if (!path_page_object)
     return 0;
 
@@ -204,7 +204,7 @@ DLLEXPORT int STDCALL FPDFPath_GetFillMode(FPDF_PAGEOBJECT path_page_object) {
   return pPathObject->m_FillType;
 }
 
-DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetStrokeEnabled(FPDF_PAGEOBJECT path_page_object) {
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_GetStrokeEnabled(FPDF_PAGEOBJECT path_page_object) {
   if (!path_page_object)
     return 0;
 
@@ -213,7 +213,7 @@ DLLEXPORT FPDF_BOOL STDCALL FPDFPath_GetStrokeEnabled(FPDF_PAGEOBJECT path_page_
 }
 
 
-DLLEXPORT float STDCALL FPDFPath_GetLineWidth(FPDF_PAGEOBJECT path_page_object) {
+FPDF_EXPORT float FPDF_CALLCONV FPDFPath_GetLineWidth(FPDF_PAGEOBJECT path_page_object) {
   if (!path_page_object)
     return 0;
 
@@ -221,7 +221,7 @@ DLLEXPORT float STDCALL FPDFPath_GetLineWidth(FPDF_PAGEOBJECT path_page_object) 
   return pPathObject->m_GraphState.GetLineWidth();
 }
 
-DLLEXPORT int STDCALL FPDFPath_GetLineCap(FPDF_PAGEOBJECT path_page_object) {
+FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetLineCap(FPDF_PAGEOBJECT path_page_object) {
   if (!path_page_object)
     return -1;
 
@@ -229,7 +229,7 @@ DLLEXPORT int STDCALL FPDFPath_GetLineCap(FPDF_PAGEOBJECT path_page_object) {
   return static_cast<int>(pPathObject->m_GraphState.GetLineCap());
 }
 
-DLLEXPORT int STDCALL FPDFPath_GetLineJoin(FPDF_PAGEOBJECT path_page_object) {
+FPDF_EXPORT int FPDF_CALLCONV FPDFPath_GetLineJoin(FPDF_PAGEOBJECT path_page_object) {
   if (!path_page_object)
     return -1;
 
