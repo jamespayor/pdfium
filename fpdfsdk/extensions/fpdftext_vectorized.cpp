@@ -1,6 +1,8 @@
 #include "public/fpdfview.h"
 
 #include "fpdfsdk/fsdk_define.h"
+#include "core/fpdfapi/page/cpdf_textobject.h"
+#include "core/fpdfapi/font/cpdf_font.h"
 #include "core/fxcrt/fx_coordinates.h"
 #include "core/fpdftext/cpdf_textpage.h"
 
@@ -16,17 +18,15 @@ typedef struct _FS_POINTF_ {
   float y;
 } FS_POINTF;
 
-// We need to disable struct padding here, or else sad things can happen on the C# side...
-#pragma pack(push, 1)
 typedef struct _FPDF_EXT_CHARINFO_ {
   FS_MATRIX matrix;
   FS_RECTF box;
   FS_POINTF origin;
+  const char *font_name;
   float font_size;
   unsigned int unicode;
   unsigned int charcode;
 } FPDF_EXT_CHARINFO;
-#pragma pack(pop)
 
 
 extern "C" {
@@ -61,6 +61,17 @@ FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_GetCharInfo(FPDF_TEXTPAGE text_page
     out_char_info.charcode = charinfo.m_Charcode;
     out_char_info.font_size = charinfo.m_FontSize;
 
+    if (charinfo.m_pTextObj) {
+      auto font = charinfo.m_pTextObj->GetFont();
+      if (font) {
+        out_char_info.font_name = font->GetBaseFont().c_str();
+      } else {
+        out_char_info.font_name = 0;
+      }
+    } else {
+      out_char_info.font_name = 0;
+    }
+
     const CFX_PointF& origin = charinfo.m_Origin;
     out_char_info.origin.x = origin.x;
     out_char_info.origin.y = origin.y;
@@ -71,7 +82,7 @@ FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_GetCharInfo(FPDF_TEXTPAGE text_page
     out_char_info.box.right = box.right;
     out_char_info.box.top = box.top;
 
-    const CFX_Matrix matrix = charinfo.m_Matrix;
+    const CFX_Matrix& matrix = charinfo.m_Matrix;
     out_char_info.matrix.a = matrix.a;
     out_char_info.matrix.b = matrix.b;
     out_char_info.matrix.c = matrix.c;
