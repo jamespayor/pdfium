@@ -23,6 +23,7 @@ typedef struct _FPDF_EXT_CHARINFO_ {
   FS_MATRIX matrix;
   FS_RECTF box;
   FS_POINTF origin;
+  int is_transformed_rectangle;
   uint32_t color_argb;
   const char *font_name;
   float font_size;
@@ -76,6 +77,8 @@ FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFText_GetCharInfo(FPDF_TEXTPAGE text_page
     const CFX_PointF& origin = charinfo.m_Origin;
     out_char_info.origin.x = origin.x;
     out_char_info.origin.y = origin.y;
+
+    out_char_info.is_transformed_rectangle = charinfo.m_IsRawUntransformedCharBox ? 0 : 1;
     
     if (charinfo.m_pTextObj) {
       uint32_t alpha = static_cast<uint32_t>((charinfo.m_pTextObj->m_GeneralState.GetFillAlpha() * 255.f) + 0.5f);
