@@ -58,6 +58,7 @@ class FPDF_CHAR_INFO {
   float m_FontSize;
   CFX_PointF m_Origin;
   CFX_FloatRect m_CharBox;
+  bool m_IsRawUntransformedCharBox;
   CFX_UnownedPtr<CPDF_TextObject> m_pTextObj;
   CFX_Matrix m_Matrix;
 };
@@ -79,8 +80,13 @@ class PAGECHAR_INFO {
   int32_t m_Flag;
   CFX_PointF m_Origin;
   CFX_FloatRect m_CharBox;
+  bool m_IsRawUntransformedCharBox;
   CFX_UnownedPtr<CPDF_TextObject> m_pTextObj;
   CFX_Matrix m_Matrix;
+
+  inline const CFX_FloatRect GetTransformedCharBox() const {
+    return m_IsRawUntransformedCharBox ? m_Matrix.TransformRect(m_CharBox) : m_CharBox;
+  }
 };
 
 struct PDFTEXT_Obj {
