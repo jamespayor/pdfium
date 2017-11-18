@@ -1,7 +1,9 @@
 /base
 /build
 /buildtools
+/obj
 /out
+/out-debug
 /testing/corpus
 /testing/gmock
 /testing/gtest
