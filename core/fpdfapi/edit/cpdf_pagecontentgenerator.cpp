@@ -85,9 +85,24 @@ void CPDF_PageContentGenerator::GenerateContent() {
       pPageDict ? pPageDict->GetObjectFor("Contents") : nullptr;
   CPDF_Stream* pStream = pDoc->NewIndirect<CPDF_Stream>();
   pStream->SetData(&buf);
+
+  // Now, we add the new content stream.
+  // In the case that the page has existing content,
+  // we surround it in a q/Q block.
+  // This prevents leaky graphics states from the
+  // other content from messing with our new content.
+
   if (pContent) {
     CPDF_Array* pArray = ToArray(pContent);
     if (pArray) {
+      CPDF_Stream* pBeginGraphicsStream = pDoc->NewIndirect<CPDF_Stream>();
+      pBeginGraphicsStream->SetData(reinterpret_cast<const uint8_t*>("q"), 1);
+      CPDF_Stream* pEndGraphicsStream = pDoc->NewIndirect<CPDF_Stream>();
+      pEndGraphicsStream->SetData(reinterpret_cast<const uint8_t*>("Q"), 1);
+
+      pArray->InsertNewAt<CPDF_Reference>(0, pDoc,
+                                          pBeginGraphicsStream->GetObjNum());
+      pArray->AddNew<CPDF_Reference>(pDoc, pEndGraphicsStream->GetObjNum());
       pArray->AddNew<CPDF_Reference>(pDoc, pStream->GetObjNum());
       return;
     }
@@ -105,12 +120,33 @@ void CPDF_PageContentGenerator::GenerateContent() {
     }
     CPDF_Array* pObjArray = pDirectObj->AsArray();
     if (pObjArray) {
+      if (!pObjArray->IsEmpty()) {
+        CPDF_Stream* pBeginGraphicsStream = pDoc->NewIndirect<CPDF_Stream>();
+        pBeginGraphicsStream->SetData(reinterpret_cast<const uint8_t*>("q"), 1);
+        CPDF_Stream* pEndGraphicsStream = pDoc->NewIndirect<CPDF_Stream>();
+        pEndGraphicsStream->SetData(reinterpret_cast<const uint8_t*>("Q"), 1);
+
+        pObjArray->InsertNewAt<CPDF_Reference>(0, pDoc,
+                                            pBeginGraphicsStream->GetObjNum());
+        pObjArray->AddNew<CPDF_Reference>(pDoc,
+                                          pEndGraphicsStream->GetObjNum());
+      }
+
       pObjArray->AddNew<CPDF_Reference>(pDoc, pStream->GetObjNum());
       return;
     }
     if (pDirectObj->IsStream()) {
+      CPDF_Stream* pBeginGraphicsStream = pDoc->NewIndirect<CPDF_Stream>();
+      pBeginGraphicsStream->SetData(reinterpret_cast<const uint8_t*>("q"), 1);
+      CPDF_Stream* pEndGraphicsStream = pDoc->NewIndirect<CPDF_Stream>();
+      pEndGraphicsStream->SetData(reinterpret_cast<const uint8_t*>("Q"), 1);
+
       CPDF_Array* pContentArray = pDoc->NewIndirect<CPDF_Array>();
+      pContentArray->AddNew<CPDF_Reference>(pDoc,
+                                            pBeginGraphicsStream->GetObjNum());
       pContentArray->AddNew<CPDF_Reference>(pDoc, pDirectObj->GetObjNum());
+      pContentArray->AddNew<CPDF_Reference>(pDoc,
+                                            pEndGraphicsStream->GetObjNum());
       pContentArray->AddNew<CPDF_Reference>(pDoc, pStream->GetObjNum());
       pPageDict->SetNewFor<CPDF_Reference>("Contents", pDoc,
                                            pContentArray->GetObjNum());
