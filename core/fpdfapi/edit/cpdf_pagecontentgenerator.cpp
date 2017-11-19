@@ -6,6 +6,8 @@
 
 #include "core/fpdfapi/edit/cpdf_pagecontentgenerator.h"
 
+#include <iomanip>
+#include <cstdio>
 #include <tuple>
 #include <utility>
 
@@ -28,7 +30,41 @@
 
 namespace {
 
-std::ostream& operator<<(std::ostream& ar, const CFX_Matrix& matrix) {
+const int numberFormatBufferLength = 64;
+char numberFormatBuffer[numberFormatBufferLength];
+
+template<typename T>
+std::ostringstream& operator<<(std::ostringstream& ar, const T x) {
+  reinterpret_cast<std::ostream&>(ar) << x;
+  return ar;
+}
+
+std::ostringstream& operator<<(std::ostringstream& ar, const double x) {
+  int n = snprintf(numberFormatBuffer, numberFormatBufferLength, "%f", x);
+  if (n >= numberFormatBufferLength) {
+    // Too large for the buffer. Default to the iostream way.
+    ar << x;
+    return ar;
+  }
+
+  while (n > 0 && numberFormatBuffer[n-1] == '0') --n;
+  if (n > 0 && numberFormatBuffer[n-1] == '.') --n;
+
+  if (n == 0) {
+    ar << '0';
+    return ar;
+  } else {
+    numberFormatBuffer[n] = '\0';
+    ar << numberFormatBuffer;
+    return ar;
+  }
+}
+
+std::ostringstream& operator<<(std::ostringstream& ar, const float x) {
+  return ar << (double) x;
+}
+
+std::ostringstream& operator<<(std::ostringstream& ar, const CFX_Matrix& matrix) {
   ar << matrix.a << " " << matrix.b << " " << matrix.c << " " << matrix.d << " "
      << matrix.e << " " << matrix.f;
   return ar;
@@ -65,6 +101,8 @@ void CPDF_PageContentGenerator::GenerateContent() {
 
   CPDF_Document* pDoc = m_pDocument.Get();
   std::ostringstream buf;
+
+  buf << std::setprecision(12) << std::fixed;
 
   // Set the default graphic state values
   buf << "q\n";
