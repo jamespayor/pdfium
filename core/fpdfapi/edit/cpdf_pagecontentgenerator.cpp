@@ -106,8 +106,6 @@ void CPDF_PageContentGenerator::GenerateContent() {
 
   // Set the default graphic state values
   buf << "q\n";
-  if (!m_pObjHolder->GetLastCTM().IsIdentity())
-    buf << m_pObjHolder->GetLastCTM().GetInverse() << " cm\n";
   ProcessDefaultGraphics(&buf);
 
   // Process the page objects
