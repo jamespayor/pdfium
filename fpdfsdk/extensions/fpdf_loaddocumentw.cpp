@@ -21,7 +21,6 @@
 #include "fpdfsdk/cpdfsdk_pageview.h"
 #include "fpdfsdk/fsdk_define.h"
 #include "fpdfsdk/fsdk_pauseadapter.h"
-#include "fpdfsdk/javascript/ijs_runtime.h"
 #include "public/fpdf_edit.h"
 #include "public/fpdf_ext.h"
 #include "public/fpdf_progressive.h"
@@ -35,10 +34,12 @@ extern "C" {
 
 // Taken straight from fpdfview.cpp:
 static FPDF_DOCUMENT LoadDocumentImpl(
-    const CFX_RetainPtr<IFX_SeekableReadStream>& pFileAccess,
+    const RetainPtr<IFX_SeekableReadStream>& pFileAccess,
     FPDF_BYTESTRING password) {
-  if (!pFileAccess)
+  if (!pFileAccess) {
+    ProcessParseError(CPDF_Parser::FILE_ERROR);
     return nullptr;
+  }
 
   auto pParser = pdfium::MakeUnique<CPDF_Parser>();
   pParser->SetPassword(password);

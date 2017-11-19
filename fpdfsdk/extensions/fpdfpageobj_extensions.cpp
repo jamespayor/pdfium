@@ -53,7 +53,7 @@ FPDF_EXPORT int FPDF_CALLCONV FPDFPageObj_GetBlendMode(FPDF_PAGEOBJECT page_obje
     return 0;
 
   CPDF_PageObject* pPageObject = static_cast<CPDF_PageObject*>(page_object);
-  const CFX_ByteString blendMode = pPageObject->m_GeneralState.GetBlendMode();
+  const ByteString& blendMode = pPageObject->m_GeneralState.GetBlendMode();
 
   const int length = static_cast<int>(blendMode.GetStringLength());
   if (length > bufferLength || !buffer) {
